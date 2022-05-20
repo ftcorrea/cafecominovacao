@@ -1,11 +1,7 @@
 # cafecominovacao
 Projetos de IA com café e inovação
 
-[![author](https://img.shields.io/badge/author-carlosfab-red.svg)](https://www.linkedin.com/in/carlosfab) [![](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/release/python-365/) [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/carlosfab/data_science/issues)
-
-<p align="center">
-  <img src="banner.png" >
-</p>
+[![author](https://img.shields.io/badge/Linkedin-ftcorrea-red)](https://www.linkedin.com/in/ftcorrea)
 
 # Felipe Corrêa
 <sub>*Manager of Project Management Office (PMO) | Manager of the Artificial Intelligence | Professor and Coordinator of the Postgraduate Course | Undergraduate Professor | Speaker | Consultant |* working at Centro Universitário Facens</sub>
