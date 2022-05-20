@@ -1,5 +1,9 @@
 [![author](https://img.shields.io/badge/Linkedin-ftcorrea-red)](https://www.linkedin.com/in/ftcorrea)
 
+<p align="center">
+  <img src="banner.png" >
+</p>
+
 # Felipe Corrêa
 <sub>*Manager of Project Management Office (PMO) | Manager of the Artificial Intelligence | Professor and Coordinator of the Postgraduate Course | Undergraduate Professor | Speaker | Consultant |* working at Centro Universitário Facens</sub>
 
