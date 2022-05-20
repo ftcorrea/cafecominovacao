@@ -1,6 +1,3 @@
-# cafecominovacao
-Projetos de IA com café e inovação
-
 [![author](https://img.shields.io/badge/Linkedin-ftcorrea-red)](https://www.linkedin.com/in/ftcorrea)
 
 # Felipe Corrêa
@@ -28,6 +25,6 @@ Volunteer and Program Manager of the PMI Branch Office São Paulo Brazil (2016 �
 
 **Links:**
 * [LinkedIn](https://www.linkedin.com/in/ftcorrea/)
-* [Linkte](https://linktr.ee/cafecominovacao)
+* [Linktree](https://linktr.ee/cafecominovacao)
 * [Instagram](https://www.instagram.com/cafecominovacao/)
 ---
