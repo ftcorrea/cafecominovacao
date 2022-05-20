@@ -27,4 +27,6 @@ Volunteer and Program Manager of the PMI Branch Office SÃ£o Paulo Brazil (2016 â
 * [LinkedIn](https://www.linkedin.com/in/ftcorrea/)
 * [Linktree](https://linktr.ee/cafecominovacao)
 * [Instagram](https://www.instagram.com/cafecominovacao/)
+
+## Projetos:
 ---
