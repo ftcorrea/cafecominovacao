@@ -8,13 +8,27 @@ Projetos de IA com café e inovação
 </p>
 
 # Felipe Corrêa
-<sub>*Lead Data Scientist* at Space Operations Center</sub>
+<sub>*Manager of Project Management Office (PMO) | Manager of the Artificial Intelligence | Professor and Coordinator of the Postgraduate Course | Undergraduate Professor | Speaker | Consultant |* working at Centro Universitário Facens</sub>
 
-As a experienced Data Scientist and Air Force pilot I combine analytical skills, ability to work in team environments, and attention to details. Having spend the last years applying Machine Learning to Brazilian Air Force real problems, I developed a critical thinking and problem-solving skills.
+Data Science student 
 
-My credentials include a Master's in Space Science and Technology from the Aeronautics Institute of Technology (ITA), an institution of higher education and advanced research rated as one of the top and most prestigious engineering schools in Brazil, and a MBA in Project and Process Management from the University of Air Force (UNIFA).
+Main Certifications: Project Management Professional, PMP® (2013), HCMP (2016), EXIN ASM (2017) and PMO-CP (2017).
 
-**Background in:** Python, Machine Learning, Space Operations and Mathematical Optimisation.
+Professional with over 13 years of experience leading Project Management, Strategy, and Innovation teams in the Engineering, Technology, Financial and High Education sectors.
+
+- Extensive experience in technology project management
+- Extensive experience in leading project teams
+- Expertise in strategic planning and development of new businesses and products
+- Proven experience managing and developing teams
+- Innovation specialist
+
+Manager of Project Management Office (PMO) and Manager of Artificial intelligence (AI) - BRAIN (Brazilian Center for Artificial Intelligence) at FACENS, Coordinator of the MBA in Project Management and Innovation at FACENS, former postgraduate professor at Faculdade Pitágoras, Faculdade Ipanema and Centro Hermes (FGV), professor in course on entrepreneurship, people management, project management and agile methodologies at FACENS. Advising professor of the Facens students' Finance group – Facens Finance. Course instructor and speaker. Adept of good facilitation practices for product definition such as Design Thinking, collaborative dynamics for project planning and management.
+
+Computer Engineer with emphasis in Industrial Systems and Processes from UNICAMP, Master in Business Economics from FGV-SP, Master in Business Management with emphasis in Innovation Management and Business Competitiveness from FIA Business School and Design Thinking for Innovation from the University of Virginia Darden Business School.
+
+Volunteer and Program Manager of the PMI Branch Office São Paulo Brazil (2016 – 2018).
+
+**Background in:** Project Management, Innovation and Strategic Management.
 
 **Links:**
 * [LinkedIn](https://www.linkedin.com/in/ftcorrea/)
