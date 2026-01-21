@@ -16,4 +16,24 @@ export const RSS_FEEDS: RSSFeed[] = [
     url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml',
     color: '#FA26A0',
   },
+  {
+    name: 'Google DeepMind',
+    url: 'https://deepmind.google/blog/rss.xml',
+    color: '#4285F4',
+  },
+  {
+    name: 'OpenAI',
+    url: 'https://openai.com/news/rss.xml',
+    color: '#10A37F',
+  },
+  {
+    name: 'NVIDIA Blog',
+    url: 'https://blogs.nvidia.com/feed/',
+    color: '#76B900',
+  },
+  {
+    name: 'Meta Research',
+    url: 'https://research.facebook.com/feed/',
+    color: '#0668E1',
+  },
 ];

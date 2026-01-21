@@ -145,7 +145,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">
-                    3
+                    7
                   </p>
                   <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
                     Fontes de notícias
@@ -203,7 +203,7 @@ export default function Home() {
               notícias de IA.
             </p>
             <p className="mt-2">
-              Fontes: TechCrunch AI, VentureBeat AI, The Verge AI
+              Fontes: TechCrunch AI, VentureBeat AI, The Verge AI, Google DeepMind, OpenAI, NVIDIA Blog, Meta Research
             </p>
           </div>
         </div>
