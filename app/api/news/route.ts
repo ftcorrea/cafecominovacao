@@ -3,6 +3,7 @@ import Parser from 'rss-parser';
 import { NewsItem } from '@/types/news';
 import { RSS_FEEDS } from '@/lib/feeds';
 import { translateText } from '@/lib/translator';
+import { MOCK_NEWS } from '@/lib/mock-data';
 
 interface RSSItem {
   title?: string;
@@ -71,14 +72,18 @@ export async function GET(request: Request) {
       }
     }
 
+    // Se não conseguiu buscar nenhuma notícia, usa dados mockados (útil para demo/desenvolvimento)
+    const newsToReturn = allNews.length > 0 ? allNews : MOCK_NEWS;
+
     // Ordena por data (mais recentes primeiro)
-    allNews.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+    newsToReturn.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
 
     return NextResponse.json({
       success: true,
-      count: allNews.length,
-      news: allNews.slice(0, limit),
+      count: newsToReturn.length,
+      news: newsToReturn.slice(0, limit),
       lastUpdate: new Date().toISOString(),
+      usingMockData: allNews.length === 0,
     });
   } catch (error) {
     console.error('Error in news API:', error);
