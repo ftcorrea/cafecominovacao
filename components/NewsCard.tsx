@@ -32,8 +32,12 @@ export default function NewsCard({ news, index }: NewsCardProps) {
       'TechCrunch AI': 'bg-green-500',
       'VentureBeat AI': 'bg-red-500',
       'The Verge AI': 'bg-pink-500',
+      'Google DeepMind': 'bg-blue-500',
+      'OpenAI': 'bg-emerald-500',
+      'NVIDIA Blog': 'bg-lime-500',
+      'Meta Research': 'bg-sky-500',
     };
-    return colors[source] || 'bg-blue-500';
+    return colors[source] || 'bg-purple-500';
   };
 
   return (

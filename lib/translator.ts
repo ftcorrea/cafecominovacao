@@ -1,22 +1,52 @@
-// Tradutor simples usando a API do Google Translate (via endpoint público)
+// Tradutor usando múltiplas APIs com fallback
 // Para produção, considere usar a API oficial do Google Translate ou DeepL
 
 export async function translateText(text: string, from: string = 'en', to: string = 'pt'): Promise<string> {
   try {
     // Remove HTML tags
-    const cleanText = text.replace(/<[^>]*>/g, '');
+    const cleanText = text.replace(/<[^>]*>/g, '').trim();
 
-    // Usando a API do MyMemory (gratuita até 5000 palavras/dia)
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=${from}|${to}`;
+    if (!cleanText) return '';
 
-    const response = await fetch(url);
-    const data = await response.json();
+    // Limita o tamanho do texto para evitar erros (máximo 500 caracteres)
+    const textToTranslate = cleanText.substring(0, 500);
 
-    if (data.responseStatus === 200 && data.responseData) {
-      return data.responseData.translatedText;
+    // Tenta LibreTranslate primeiro (API pública gratuita)
+    try {
+      const libreResponse = await fetch('https://libretranslate.de/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          q: textToTranslate,
+          source: from,
+          target: to,
+          format: 'text',
+        }),
+      });
+
+      if (libreResponse.ok) {
+        const libreData = await libreResponse.json();
+        if (libreData.translatedText) {
+          return libreData.translatedText;
+        }
+      }
+    } catch (libreError) {
+      console.log('LibreTranslate failed, trying MyMemory...');
     }
 
-    // Fallback: retorna texto original se a tradução falhar
+    // Fallback para MyMemory
+    const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=${from}|${to}`;
+    const myMemoryResponse = await fetch(myMemoryUrl);
+    const myMemoryData = await myMemoryResponse.json();
+
+    if (myMemoryData.responseStatus === 200 && myMemoryData.responseData) {
+      return myMemoryData.responseData.translatedText;
+    }
+
+    // Se ambas falharem, retorna texto original
+    console.warn('Translation failed for:', textToTranslate.substring(0, 50));
     return cleanText;
   } catch (error) {
     console.error('Translation error:', error);
