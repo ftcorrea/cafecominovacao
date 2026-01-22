@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { AppProvider } from '@/lib/AppContext';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -13,9 +14,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning className="dark">
       <body className="font-sans antialiased">
-        {children}
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );

@@ -1,30 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { RefreshCw, Sparkles, TrendingUp } from 'lucide-react';
-import NewsCard from '@/components/NewsCard';
-import LoadingSpinner from '@/components/LoadingSpinner';
-import ThemeToggle from '@/components/ThemeToggle';
-import { NewsItem } from '@/types/news';
+import { useEffect, useMemo, useState } from 'react';
+import { Search, RefreshCw } from 'lucide-react';
+import { useApp } from '@/lib/AppContext';
+import Sidebar from '@/components/Sidebar';
+import NewsCardCompact from '@/components/NewsCardCompact';
+import FeaturedSection from '@/components/FeaturedSection';
 
 export default function Home() {
-  const [news, setNews] = useState<NewsItem[]>([]);
+  const {
+    news,
+    setNews,
+    savedIds,
+    readIds,
+    activeSection,
+    activeSource,
+    searchQuery,
+    setSearchQuery,
+    sidebarCollapsed,
+  } = useApp();
+
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<string>('');
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   const fetchNews = async (showRefreshing = false) => {
     if (showRefreshing) setRefreshing(true);
     else setLoading(true);
 
     try {
-      const response = await fetch('/api/news?limit=30&translate=true');
+      const response = await fetch('/api/news?limit=50&translate=true');
       const data = await response.json();
 
       if (data.success) {
         setNews(data.news);
-        setLastUpdate(new Date().toLocaleTimeString('pt-BR'));
+        setLastUpdate(new Date());
       }
     } catch (error) {
       console.error('Error fetching news:', error);
@@ -37,177 +47,170 @@ export default function Home() {
   useEffect(() => {
     fetchNews();
 
-    // Auto-refresh a cada 5 minutos
+    // Auto-refresh a cada 10 minutos
     const interval = setInterval(() => {
       fetchNews(true);
-    }, 5 * 60 * 1000);
+    }, 10 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
 
+  // Filtrar notícias baseado na seção, fonte e busca
+  const filteredNews = useMemo(() => {
+    let filtered = [...news];
+
+    // Filtro por seção
+    if (activeSection === 'saved') {
+      filtered = filtered.filter(n => savedIds.has(n.id));
+    } else if (activeSection === 'read') {
+      filtered = filtered.filter(n => readIds.has(n.id));
+    }
+
+    // Filtro por fonte
+    if (activeSource !== 'all') {
+      filtered = filtered.filter(n => n.source === activeSource);
+    }
+
+    // Filtro por busca
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        n =>
+          n.title.toLowerCase().includes(query) ||
+          n.titleOriginal.toLowerCase().includes(query) ||
+          n.description.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [news, activeSection, activeSource, savedIds, readIds, searchQuery]);
+
+  const getPageTitle = () => {
+    if (activeSection === 'saved') return 'Artigos Salvos';
+    if (activeSection === 'read') return 'Histórico de Leitura';
+    if (activeSource !== 'all') {
+      const sourceNames: Record<string, string> = {
+        'TechCrunch AI': 'TechCrunch',
+        'The Verge AI': 'The Verge',
+        'NVIDIA Blog': 'NVIDIA Blog',
+        'OpenAI': 'OpenAI',
+        'Google DeepMind': 'Google AI',
+        'Meta Research': 'Meta Research',
+      };
+      return sourceNames[activeSource] || activeSource;
+    }
+    return 'Todas as Notícias';
+  };
+
+  const getLastUpdateText = () => {
+    if (!lastUpdate) return '';
+
+    const diff = Math.floor((new Date().getTime() - lastUpdate.getTime()) / 1000 / 60);
+
+    if (diff < 1) return 'Atualizado agora';
+    if (diff < 60) return `Atualizado há ${diff} min`;
+    const hours = Math.floor(diff / 60);
+    return `Atualizado há ${hours}h`;
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background decorativo */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen bg-light-bg-primary dark:bg-dark-bg-primary">
+      <Sidebar />
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 glass-effect border-b border-gray-200/20 dark:border-gray-700/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo e título */}
-            <motion.div
-              className="flex items-center gap-3"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
+      {/* Área Principal */}
+      <main
+        className={`transition-all duration-200 ${
+          sidebarCollapsed ? 'ml-[60px]' : 'ml-[220px]'
+        }`}
+      >
+        <div className="max-w-[1400px] mx-auto p-6">
+          {/* Header */}
+          <header className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-[22px] font-bold text-light-text-primary dark:text-dark-text-primary mb-1">
+                {getPageTitle()}
+              </h1>
+              <p className="text-[13px] text-light-text-secondary dark:text-dark-text-secondary">
+                {filteredNews.length} notícias • {getLastUpdateText()}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Campo de Busca */}
               <div className="relative">
-                <Sparkles className="w-8 h-8 text-primary-light dark:text-primary-dark" />
-                <motion.div
-                  className="absolute inset-0"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                >
-                  <TrendingUp className="w-8 h-8 text-purple-500 opacity-30" />
-                </motion.div>
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-light-text-secondary dark:text-dark-text-secondary" />
+                <input
+                  type="text"
+                  placeholder="Buscar notícias..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-[260px] pl-10 pr-4 py-2 bg-light-bg-card dark:bg-dark-bg-card border border-light-border dark:border-dark-border rounded-lg text-sm text-light-text-primary dark:text-dark-text-primary placeholder:text-light-text-secondary dark:placeholder:text-dark-text-secondary focus:outline-none focus:border-accent"
+                />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold gradient-text">AI News Hub</h1>
-                <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-                  Notícias de IA em tempo real
-                </p>
-              </div>
-            </motion.div>
 
-            {/* Controles */}
-            <motion.div
-              className="flex items-center gap-3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {lastUpdate && (
-                <span className="hidden sm:block text-xs text-text-secondary-light dark:text-text-secondary-dark">
-                  Última atualização: {lastUpdate}
-                </span>
-              )}
-
+              {/* Botão Refresh */}
               <button
                 onClick={() => fetchNews(true)}
                 disabled={refreshing}
-                className="p-3 rounded-full bg-primary-light dark:bg-primary-dark text-white hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="p-2.5 bg-light-bg-card dark:bg-dark-bg-card border border-light-border dark:border-dark-border rounded-lg hover:border-accent/60 transition-colors disabled:opacity-50"
                 aria-label="Atualizar notícias"
               >
                 <RefreshCw
-                  className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`}
+                  className={`w-4 h-4 text-light-text-primary dark:text-dark-text-primary ${
+                    refreshing ? 'animate-spin' : ''
+                  }`}
                 />
               </button>
+            </div>
+          </header>
 
-              <ThemeToggle />
-            </motion.div>
-          </div>
+          {/* Seção de Destaques (apenas no feed principal) */}
+          {activeSection === 'feed' && activeSource === 'all' && !searchQuery && (
+            <FeaturedSection news={filteredNews} />
+          )}
+
+          {/* Grid de Notícias */}
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <RefreshCw className="w-8 h-8 text-accent animate-spin mx-auto mb-3" />
+                <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">
+                  Carregando notícias...
+                </p>
+              </div>
+            </div>
+          ) : filteredNews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+              {filteredNews.map((item, index) => (
+                <NewsCardCompact
+                  key={item.id}
+                  news={item}
+                  featured={
+                    activeSection === 'feed' &&
+                    activeSource === 'all' &&
+                    !searchQuery &&
+                    index < 2
+                  }
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <div className="text-4xl mb-3">📭</div>
+              <h3 className="text-base font-medium text-light-text-primary dark:text-dark-text-primary mb-2">
+                Nenhuma notícia encontrada
+              </h3>
+              <p className="text-[13px] text-light-text-secondary dark:text-dark-text-secondary">
+                {activeSection === 'saved'
+                  ? 'Você ainda não salvou nenhum artigo.'
+                  : activeSection === 'read'
+                  ? 'Você ainda não marcou nenhum artigo como lido.'
+                  : 'Tente ajustar seus filtros ou busca.'}
+              </p>
+            </div>
+          )}
         </div>
-      </header>
-
-      {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Estatísticas */}
-        {!loading && news.length > 0 && (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <div className="bg-card-light dark:bg-card-dark rounded-xl p-4 shadow-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-green-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">
-                    {news.length}
-                  </p>
-                  <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-                    Notícias disponíveis
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card-light dark:bg-card-dark rounded-xl p-4 shadow-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">
-                    7
-                  </p>
-                  <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-                    Fontes de notícias
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card-light dark:bg-card-dark rounded-xl p-4 shadow-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-                  <RefreshCw className="w-6 h-6 text-purple-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">
-                    5min
-                  </p>
-                  <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">
-                    Auto-atualização
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Grid de notícias */}
-        {loading ? (
-          <LoadingSpinner />
-        ) : news.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {news.map((item, index) => (
-              <NewsCard key={item.id} news={item} index={index} />
-            ))}
-          </div>
-        ) : (
-          <motion.div
-            className="text-center py-20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <p className="text-text-secondary-light dark:text-text-secondary-dark">
-              Nenhuma notícia encontrada.
-            </p>
-          </motion.div>
-        )}
       </main>
-
-      {/* Footer */}
-      <footer className="mt-20 border-t border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-sm text-text-secondary-light dark:text-text-secondary-dark">
-            <p>
-              © {new Date().getFullYear()} AI News Hub. Agregando as melhores
-              notícias de IA.
-            </p>
-            <p className="mt-2">
-              Fontes: TechCrunch AI, VentureBeat AI, The Verge AI, Google DeepMind, OpenAI, NVIDIA Blog, Meta Research
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
