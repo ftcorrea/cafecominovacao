@@ -45,23 +45,33 @@ export async function GET(request: Request) {
 
           if (translate) {
             try {
-              // Traduz com timeout de 5 segundos por item
+              // Traduz com timeout maior e delay entre requisições
               const translateWithTimeout = async (text: string, maxLength: number) => {
                 const timeout = new Promise<string>((_, reject) =>
-                  setTimeout(() => reject(new Error('Translation timeout')), 5000)
+                  setTimeout(() => reject(new Error('Translation timeout')), 10000)
                 );
+
+                // Adiciona delay de 200ms antes de cada tradução
+                await new Promise(resolve => setTimeout(resolve, 200));
+
                 const translation = translateText(text.substring(0, maxLength));
                 return Promise.race([translation, timeout]);
               };
 
-              title = await translateWithTimeout(titleOriginal, 500);
-              description = await translateWithTimeout(descriptionOriginal, 1000);
+              title = await translateWithTimeout(titleOriginal, 400);
+
+              // Adiciona delay extra entre título e descrição
+              await new Promise(resolve => setTimeout(resolve, 300));
+
+              description = await translateWithTimeout(descriptionOriginal, 800);
 
               // Log de sucesso
               console.log(`✓ Traduzido: ${titleOriginal.substring(0, 50)}...`);
             } catch (error) {
-              console.error('Translation failed for item:', titleOriginal.substring(0, 50), error);
+              console.error('Translation failed for item:', titleOriginal.substring(0, 50));
               // Mantém originais se tradução falhar
+              title = titleOriginal;
+              description = descriptionOriginal;
             }
           }
 

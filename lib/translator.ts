@@ -1,56 +1,47 @@
-// Tradutor usando múltiplas APIs com fallback
+// Tradutor usando API MyMemory (mais estável)
 // Para produção, considere usar a API oficial do Google Translate ou DeepL
 
 export async function translateText(text: string, from: string = 'en', to: string = 'pt'): Promise<string> {
   try {
-    // Remove HTML tags
+    // Remove HTML tags e limpa o texto
     const cleanText = text.replace(/<[^>]*>/g, '').trim();
 
     if (!cleanText) return '';
 
-    // Limita o tamanho do texto para evitar erros (máximo 500 caracteres)
+    // Limita o tamanho do texto (MyMemory tem limite de 500 caracteres)
     const textToTranslate = cleanText.substring(0, 500);
 
-    // Tenta LibreTranslate primeiro (API pública gratuita)
-    try {
-      const libreResponse = await fetch('https://libretranslate.de/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          q: textToTranslate,
-          source: from,
-          target: to,
-          format: 'text',
-        }),
-      });
+    // Usa MyMemory com email para aumentar o limite
+    const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=${from}|${to}&de=noreply@ainewshub.com`;
 
-      if (libreResponse.ok) {
-        const libreData = await libreResponse.json();
-        if (libreData.translatedText) {
-          return libreData.translatedText;
-        }
-      }
-    } catch (libreError) {
-      console.log('LibreTranslate failed, trying MyMemory...');
+    const myMemoryResponse = await fetch(myMemoryUrl, {
+      headers: {
+        'User-Agent': 'AI News Hub/1.0',
+      },
+    });
+
+    if (!myMemoryResponse.ok) {
+      console.warn(`MyMemory HTTP ${myMemoryResponse.status}`);
+      return cleanText;
     }
 
-    // Fallback para MyMemory
-    const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=${from}|${to}`;
-    const myMemoryResponse = await fetch(myMemoryUrl);
     const myMemoryData = await myMemoryResponse.json();
 
-    if (myMemoryData.responseStatus === 200 && myMemoryData.responseData) {
-      return myMemoryData.responseData.translatedText;
+    if (myMemoryData.responseStatus === 200 && myMemoryData.responseData?.translatedText) {
+      const translated = myMemoryData.responseData.translatedText;
+
+      // Verifica se a tradução é válida (não é apenas o texto original)
+      if (translated && translated.toLowerCase() !== textToTranslate.toLowerCase()) {
+        return translated;
+      }
     }
 
-    // Se ambas falharem, retorna texto original
-    console.warn('Translation failed for:', textToTranslate.substring(0, 50));
+    // Se falhar ou não traduzir, retorna original
+    console.warn('Translation returned original text');
     return cleanText;
   } catch (error) {
     console.error('Translation error:', error);
-    return text.replace(/<[^>]*>/g, '');
+    return text.replace(/<[^>]*>/g, '').trim();
   }
 }
 
