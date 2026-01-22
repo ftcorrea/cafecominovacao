@@ -43,3 +43,13 @@
 .light * {
   scrollbar-color: #e2e4ea transparent;
 }
+
+/* Esconder scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

@@ -6,6 +6,8 @@ import { useApp } from '@/lib/AppContext';
 import Sidebar from '@/components/Sidebar';
 import NewsCardCompact from '@/components/NewsCardCompact';
 import FeaturedSection from '@/components/FeaturedSection';
+import MonthFilter from '@/components/MonthFilter';
+import { getRecentNews, getArchivedNews, getNewsByMonth } from '@/lib/newsFilters';
 
 export default function Home() {
   const {
@@ -15,6 +17,7 @@ export default function Home() {
     readIds,
     activeSection,
     activeSource,
+    selectedMonth,
     searchQuery,
     setSearchQuery,
     sidebarCollapsed,
@@ -59,10 +62,23 @@ export default function Home() {
   const filteredNews = useMemo(() => {
     let filtered = [...news];
 
-    // Filtro por seção
-    if (activeSection === 'saved') {
+    // Filtro temporal por seção
+    if (activeSection === 'feed') {
+      // Feed: últimos 3 dias (ou 15 mais recentes)
+      filtered = getRecentNews(filtered);
+    } else if (activeSection === 'archive') {
+      // Anteriores: mais de 3 dias até 12 meses
+      filtered = getArchivedNews(filtered);
+
+      // Se há um mês selecionado, filtra por esse mês
+      if (selectedMonth) {
+        filtered = getNewsByMonth(filtered, selectedMonth);
+      }
+    } else if (activeSection === 'saved') {
+      // Salvos: filtra apenas IDs salvos
       filtered = filtered.filter(n => savedIds.has(n.id));
     } else if (activeSection === 'read') {
+      // Lidos: filtra apenas IDs lidos
       filtered = filtered.filter(n => readIds.has(n.id));
     }
 
@@ -83,11 +99,12 @@ export default function Home() {
     }
 
     return filtered;
-  }, [news, activeSection, activeSource, savedIds, readIds, searchQuery]);
+  }, [news, activeSection, activeSource, savedIds, readIds, searchQuery, selectedMonth]);
 
   const getPageTitle = () => {
     if (activeSection === 'saved') return 'Artigos Salvos';
     if (activeSection === 'read') return 'Histórico de Leitura';
+    if (activeSection === 'archive') return 'Notícias Anteriores';
     if (activeSource !== 'all') {
       const sourceNames: Record<string, string> = {
         'TechCrunch AI': 'TechCrunch',
@@ -100,6 +117,13 @@ export default function Home() {
       return sourceNames[activeSource] || activeSource;
     }
     return 'Todas as Notícias';
+  };
+
+  const getPageSubtitle = () => {
+    if (activeSection === 'archive') {
+      return 'Navegue pelas notícias dos últimos 12 meses';
+    }
+    return `${filteredNews.length} notícias • ${getLastUpdateText()}`;
   };
 
   const getLastUpdateText = () => {
@@ -131,7 +155,7 @@ export default function Home() {
                 {getPageTitle()}
               </h1>
               <p className="text-[13px] text-light-text-secondary dark:text-dark-text-secondary">
-                {filteredNews.length} notícias • {getLastUpdateText()}
+                {getPageSubtitle()}
               </p>
             </div>
 
@@ -169,6 +193,11 @@ export default function Home() {
             <FeaturedSection news={filteredNews} />
           )}
 
+          {/* Filtro por Mês (apenas na seção Anteriores) */}
+          {activeSection === 'archive' && !loading && (
+            <MonthFilter news={getArchivedNews(news)} />
+          )}
+
           {/* Grid de Notícias */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
@@ -196,15 +225,21 @@ export default function Home() {
             </div>
           ) : (
             <div className="text-center py-20">
-              <div className="text-4xl mb-3">📭</div>
+              <div className="text-4xl mb-3">
+                {activeSection === 'archive' ? '📅' : '📭'}
+              </div>
               <h3 className="text-base font-medium text-light-text-primary dark:text-dark-text-primary mb-2">
-                Nenhuma notícia encontrada
+                {activeSection === 'archive'
+                  ? 'Nenhuma notícia anterior disponível'
+                  : 'Nenhuma notícia encontrada'}
               </h3>
               <p className="text-[13px] text-light-text-secondary dark:text-dark-text-secondary">
                 {activeSection === 'saved'
                   ? 'Você ainda não salvou nenhum artigo.'
                   : activeSection === 'read'
                   ? 'Você ainda não marcou nenhum artigo como lido.'
+                  : activeSection === 'archive'
+                  ? 'Notícias aparecem aqui após 3 dias e ficam disponíveis por até 12 meses.'
                   : 'Tente ajustar seus filtros ou busca.'}
               </p>
             </div>

@@ -15,10 +15,14 @@ interface AppContextType {
   toggleRead: (id: string) => void;
 
   // Filtros
-  activeSection: 'feed' | 'saved' | 'read';
-  setActiveSection: (section: 'feed' | 'saved' | 'read') => void;
+  activeSection: 'feed' | 'saved' | 'read' | 'archive';
+  setActiveSection: (section: 'feed' | 'saved' | 'read' | 'archive') => void;
   activeSource: string;
   setActiveSource: (source: string) => void;
+
+  // Filtro de mês (para seção Anteriores)
+  selectedMonth: string | null; // formato: "2026-01"
+  setSelectedMonth: (month: string | null) => void;
 
   // Busca
   searchQuery: string;
@@ -39,8 +43,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
-  const [activeSection, setActiveSection] = useState<'feed' | 'saved' | 'read'>('feed');
+  const [activeSection, setActiveSection] = useState<'feed' | 'saved' | 'read' | 'archive'>('feed');
   const [activeSource, setActiveSource] = useState<string>('all');
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -115,6 +120,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setActiveSection,
         activeSource,
         setActiveSource,
+        selectedMonth,
+        setSelectedMonth,
         searchQuery,
         setSearchQuery,
         sidebarCollapsed,

@@ -104,6 +104,18 @@ export default function Sidebar() {
             </span>
           )}
         </button>
+
+        <button
+          onClick={() => setActiveSection('archive')}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+            activeSection === 'archive'
+              ? 'bg-accent/20 text-accent'
+              : 'text-light-text-primary dark:text-dark-text-primary hover:bg-light-bg-card-hover dark:hover:bg-dark-bg-card-hover'
+          } ${sidebarCollapsed ? 'justify-center' : ''}`}
+        >
+          <span className="text-base">📅</span>
+          {!sidebarCollapsed && <span>Anteriores</span>}
+        </button>
       </nav>
 
       {/* Divisor */}
