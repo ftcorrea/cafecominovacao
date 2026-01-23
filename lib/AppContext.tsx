@@ -8,11 +8,13 @@ interface AppContextType {
   news: NewsItem[];
   setNews: (news: NewsItem[]) => void;
 
-  // Salvos e lidos
+  // Salvos, lidos e curtidos
   savedIds: Set<string>;
   readIds: Set<string>;
+  likedIds: Set<string>;
   toggleSaved: (id: string) => void;
   toggleRead: (id: string) => void;
+  toggleLiked: (id: string) => void;
 
   // Filtros
   activeSection: 'feed' | 'saved' | 'read' | 'archive';
@@ -43,6 +45,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [activeSection, setActiveSection] = useState<'feed' | 'saved' | 'read' | 'archive'>('feed');
   const [activeLabel, setActiveLabel] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
@@ -54,10 +57,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const saved = localStorage.getItem('savedArticles');
     const read = localStorage.getItem('readArticles');
+    const liked = localStorage.getItem('likedArticles');
     const theme = localStorage.getItem('theme');
 
     if (saved) setSavedIds(new Set(JSON.parse(saved)));
     if (read) setReadIds(new Set(JSON.parse(read)));
+    if (liked) setLikedIds(new Set(JSON.parse(liked)));
     if (theme) setIsDarkMode(theme === 'dark');
 
     // Aplicar tema inicial
@@ -94,6 +99,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const toggleLiked = (id: string) => {
+    setLikedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      localStorage.setItem('likedArticles', JSON.stringify(Array.from(newSet)));
+      return newSet;
+    });
+  };
+
   const toggleTheme = () => {
     setIsDarkMode(prev => {
       const newValue = !prev;
@@ -114,8 +132,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setNews,
         savedIds,
         readIds,
+        likedIds,
         toggleSaved,
         toggleRead,
+        toggleLiked,
         activeSection,
         setActiveSection,
         activeLabel,
