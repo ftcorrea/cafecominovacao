@@ -28,52 +28,11 @@ export default function NewsCardCompact({ news, featured = false }: NewsCardComp
     return `${days}d`;
   };
 
-  const getSourceColor = (source: string) => {
-    const colors: Record<string, string> = {
-      'TechCrunch AI': '#00aa00',
-      'The Verge AI': '#fa4b2a',
-      'NVIDIA Blog': '#76b900',
-      'OpenAI': '#10a37f',
-      'Google DeepMind': '#4285f4',
-      'Meta Research': '#0668E1',
-    };
-    return colors[source] || '#6366f1';
-  };
+  // Usar whyItMatters se existir, senão gerar do description
+  const whyItMatters = news.whyItMatters || news.description.substring(0, 120) + '...';
 
-  const getSourceShortName = (source: string) => {
-    const names: Record<string, string> = {
-      'TechCrunch AI': 'TechCrunch',
-      'The Verge AI': 'The Verge',
-      'NVIDIA Blog': 'NVIDIA',
-      'OpenAI': 'OpenAI',
-      'Google DeepMind': 'Google AI',
-      'Meta Research': 'Meta',
-      'VentureBeat AI': 'VentureBeat',
-    };
-    return names[source] || source;
-  };
-
-  // Gerar "Por que importa" baseado no título e descrição
-  const whyItMatters = news.description.substring(0, 120) + '...';
-
-  // Gerar tags baseadas no título
-  const generateTags = () => {
-    const keywords = ['AI', 'ML', 'LLM', 'Neural', 'GPT', 'Model', 'Research', 'Tech'];
-    const tags: string[] = [];
-
-    keywords.forEach(keyword => {
-      if (news.title.includes(keyword) || news.titleOriginal.includes(keyword)) {
-        tags.push(keyword);
-      }
-    });
-
-    // Adicionar fonte como tag
-    tags.push(getSourceShortName(news.source));
-
-    return tags.slice(0, 3);
-  };
-
-  const tags = generateTags();
+  // Usar tags se existirem, senão array vazio
+  const tags = news.tags || [];
 
   return (
     <div
@@ -82,17 +41,11 @@ export default function NewsCardCompact({ news, featured = false }: NewsCardComp
       } hover:bg-light-bg-card-hover dark:hover:bg-dark-bg-card-hover hover:border-accent/60 hover:-translate-y-0.5`}
       onClick={() => window.open(news.link, '_blank')}
     >
-      {/* Header do Card */}
+      {/* Header do Card - Apenas tempo e badge destaque */}
       <div className="flex items-center justify-between mb-2.5">
-        <div className="flex items-center gap-1.5 text-[11px] text-light-text-secondary dark:text-dark-text-secondary">
-          <div
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: getSourceColor(news.source) }}
-          />
-          <span>{getSourceShortName(news.source)}</span>
-          <span>•</span>
-          <span>{formatTime(news.pubDate)}</span>
-        </div>
+        <span className="text-[11px] text-light-text-secondary dark:text-dark-text-secondary">
+          {formatTime(news.pubDate)}
+        </span>
 
         {featured && (
           <span className="text-[9px] font-semibold bg-accent text-white px-1.5 py-0.5 rounded uppercase tracking-wide">
@@ -101,15 +54,10 @@ export default function NewsCardCompact({ news, featured = false }: NewsCardComp
         )}
       </div>
 
-      {/* Título */}
-      <h3 className="text-sm font-semibold text-light-text-primary dark:text-dark-text-primary leading-snug mb-1.5 line-clamp-2">
+      {/* Título - Apenas versão em português */}
+      <h3 className="text-sm font-semibold text-light-text-primary dark:text-dark-text-primary leading-snug mb-2.5 line-clamp-2">
         {news.title}
       </h3>
-
-      {/* Título Original */}
-      <p className="text-[11px] text-light-text-secondary dark:text-dark-text-secondary italic mb-2.5 line-clamp-1">
-        {news.titleOriginal}
-      </p>
 
       {/* Por que importa */}
       <div className="bg-accent/10 dark:bg-accent/20 rounded-md p-2 mb-2.5">
@@ -121,10 +69,10 @@ export default function NewsCardCompact({ news, featured = false }: NewsCardComp
         </p>
       </div>
 
-      {/* Tags */}
+      {/* Tags de tipo de conteúdo (máximo 2) */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-2.5">
-          {tags.map((tag, index) => (
+          {tags.slice(0, 2).map((tag, index) => (
             <span
               key={index}
               className="text-[10px] bg-light-bg-secondary dark:bg-dark-bg-secondary text-light-text-secondary dark:text-dark-text-secondary px-1.5 py-0.5 rounded"

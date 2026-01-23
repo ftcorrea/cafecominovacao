@@ -2,23 +2,14 @@
 
 import { useApp } from '@/lib/AppContext';
 import { ChevronLeft, ChevronRight, Sun, Moon } from 'lucide-react';
-
-const SOURCES = [
-  { id: 'all', name: 'Todas as Fontes', icon: '📡', color: null },
-  { id: 'TechCrunch AI', name: 'TechCrunch', icon: '🟢', color: 'sources-techcrunch' },
-  { id: 'The Verge AI', name: 'The Verge', icon: '🟠', color: 'sources-verge' },
-  { id: 'NVIDIA Blog', name: 'NVIDIA Blog', icon: '🟢', color: 'sources-nvidia' },
-  { id: 'OpenAI', name: 'OpenAI', icon: '🟢', color: 'sources-openai' },
-  { id: 'Google DeepMind', name: 'Google AI', icon: '🔵', color: 'sources-google' },
-  { id: 'Meta Research', name: 'Meta Research', icon: '🔵', color: 'sources-meta' },
-];
+import { LABELS } from '@/lib/labels';
 
 export default function Sidebar() {
   const {
     activeSection,
     setActiveSection,
-    activeSource,
-    setActiveSource,
+    activeLabel,
+    setActiveLabel,
     savedIds,
     readIds,
     news,
@@ -28,9 +19,9 @@ export default function Sidebar() {
     toggleTheme,
   } = useApp();
 
-  const getSourceCount = (sourceId: string) => {
-    if (sourceId === 'all') return news.length;
-    return news.filter(n => n.source === sourceId).length;
+  const getLabelCount = (labelId: string) => {
+    if (labelId === 'all') return news.length;
+    return news.filter(n => n.labels && n.labels.includes(labelId)).length;
   };
 
   return (
@@ -121,58 +112,41 @@ export default function Sidebar() {
       {/* Divisor */}
       <div className="mx-4 h-px bg-light-border dark:border-dark-border my-3" />
 
-      {/* Seção de Fontes */}
+      {/* Seção de Rótulos */}
       {!sidebarCollapsed && (
         <>
           <div className="px-4 mb-2">
             <h3 className="text-[11px] font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wide px-3">
-              Fontes
+              Rótulos
             </h3>
           </div>
 
           <nav className="px-4 space-y-0.5 flex-1 overflow-y-auto">
-            {SOURCES.map(source => (
+            {LABELS.map(label => (
               <button
-                key={source.id}
+                key={label.id}
                 onClick={() => {
-                  setActiveSource(source.id);
+                  setActiveLabel(label.id);
                   setActiveSection('feed');
                 }}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[13px] transition-colors ${
-                  activeSource === source.id
+                  activeLabel === label.id
                     ? 'bg-accent/20 text-accent'
                     : 'text-light-text-primary dark:text-dark-text-primary hover:bg-light-bg-card-hover dark:hover:bg-dark-bg-card-hover'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  {source.color ? (
-                    <div
-                      className={`w-2 h-2 rounded-full`}
-                      style={{
-                        backgroundColor:
-                          source.color === 'sources-techcrunch'
-                            ? '#00aa00'
-                            : source.color === 'sources-verge'
-                            ? '#fa4b2a'
-                            : source.color === 'sources-nvidia'
-                            ? '#76b900'
-                            : source.color === 'sources-openai'
-                            ? '#10a37f'
-                            : source.color === 'sources-anthropic'
-                            ? '#d4a574'
-                            : source.color === 'sources-google'
-                            ? '#4285f4'
-                            : source.color === 'sources-meta'
-                            ? '#0668E1'
-                            : '#6366f1',
-                      }}
-                    />
+                  {label.icon ? (
+                    <span className="text-sm">{label.icon}</span>
                   ) : (
-                    <span className="text-sm">{source.icon}</span>
+                    <div
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: label.color }}
+                    />
                   )}
-                  <span>{source.name}</span>
+                  <span>{label.name}</span>
                 </div>
-                <span className="text-[11px] opacity-60">{getSourceCount(source.id)}</span>
+                <span className="text-[11px] opacity-60">{getLabelCount(label.id)}</span>
               </button>
             ))}
           </nav>

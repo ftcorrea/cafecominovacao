@@ -17,8 +17,8 @@ interface AppContextType {
   // Filtros
   activeSection: 'feed' | 'saved' | 'read' | 'archive';
   setActiveSection: (section: 'feed' | 'saved' | 'read' | 'archive') => void;
-  activeSource: string;
-  setActiveSource: (source: string) => void;
+  activeLabel: string;
+  setActiveLabel: (label: string) => void;
 
   // Filtro de mês (para seção Anteriores)
   selectedMonth: string | null; // formato: "2026-01"
@@ -44,7 +44,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [activeSection, setActiveSection] = useState<'feed' | 'saved' | 'read' | 'archive'>('feed');
-  const [activeSource, setActiveSource] = useState<string>('all');
+  const [activeLabel, setActiveLabel] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -118,8 +118,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleRead,
         activeSection,
         setActiveSection,
-        activeSource,
-        setActiveSource,
+        activeLabel,
+        setActiveLabel,
         selectedMonth,
         setSelectedMonth,
         searchQuery,

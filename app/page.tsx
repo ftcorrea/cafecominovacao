@@ -16,7 +16,7 @@ export default function Home() {
     savedIds,
     readIds,
     activeSection,
-    activeSource,
+    activeLabel,
     selectedMonth,
     searchQuery,
     setSearchQuery,
@@ -82,9 +82,9 @@ export default function Home() {
       filtered = filtered.filter(n => readIds.has(n.id));
     }
 
-    // Filtro por fonte
-    if (activeSource !== 'all') {
-      filtered = filtered.filter(n => n.source === activeSource);
+    // Filtro por rótulo
+    if (activeLabel !== 'all') {
+      filtered = filtered.filter(n => n.labels && n.labels.includes(activeLabel));
     }
 
     // Filtro por busca
@@ -99,22 +99,14 @@ export default function Home() {
     }
 
     return filtered;
-  }, [news, activeSection, activeSource, savedIds, readIds, searchQuery, selectedMonth]);
+  }, [news, activeSection, activeLabel, savedIds, readIds, searchQuery, selectedMonth]);
 
   const getPageTitle = () => {
     if (activeSection === 'saved') return 'Artigos Salvos';
     if (activeSection === 'read') return 'Histórico de Leitura';
     if (activeSection === 'archive') return 'Notícias Anteriores';
-    if (activeSource !== 'all') {
-      const sourceNames: Record<string, string> = {
-        'TechCrunch AI': 'TechCrunch',
-        'The Verge AI': 'The Verge',
-        'NVIDIA Blog': 'NVIDIA Blog',
-        'OpenAI': 'OpenAI',
-        'Google DeepMind': 'Google AI',
-        'Meta Research': 'Meta Research',
-      };
-      return sourceNames[activeSource] || activeSource;
+    if (activeLabel !== 'all') {
+      return activeLabel; // O nome do rótulo já é o que queremos exibir
     }
     return 'Todas as Notícias';
   };
@@ -189,7 +181,7 @@ export default function Home() {
           </header>
 
           {/* Seção de Destaques (apenas no feed principal) */}
-          {activeSection === 'feed' && activeSource === 'all' && !searchQuery && (
+          {activeSection === 'feed' && activeLabel === 'all' && !searchQuery && (
             <FeaturedSection news={filteredNews} />
           )}
 
@@ -216,7 +208,7 @@ export default function Home() {
                   news={item}
                   featured={
                     activeSection === 'feed' &&
-                    activeSource === 'all' &&
+                    activeLabel === 'all' &&
                     !searchQuery &&
                     index < 2
                   }
