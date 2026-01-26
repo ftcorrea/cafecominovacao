@@ -11,7 +11,6 @@ export default function Sidebar() {
     activeLabel,
     setActiveLabel,
     savedIds,
-    readIds,
     news,
     sidebarCollapsed,
     setSidebarCollapsed,
@@ -73,25 +72,6 @@ export default function Sidebar() {
           {!sidebarCollapsed && savedIds.size > 0 && (
             <span className="text-[11px] font-medium bg-accent text-white px-1.5 py-0.5 rounded-full">
               {savedIds.size}
-            </span>
-          )}
-        </button>
-
-        <button
-          onClick={() => setActiveSection('read')}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-            activeSection === 'read'
-              ? 'bg-accent/20 text-accent'
-              : 'text-light-text-primary dark:text-dark-text-primary hover:bg-light-bg-card-hover dark:hover:bg-dark-bg-card-hover'
-          } ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}
-        >
-          <div className={`flex items-center gap-3`}>
-            <span className="text-base">✓</span>
-            {!sidebarCollapsed && <span>Lidos</span>}
-          </div>
-          {!sidebarCollapsed && readIds.size > 0 && (
-            <span className="text-[11px] font-medium bg-accent text-white px-1.5 py-0.5 rounded-full">
-              {readIds.size}
             </span>
           )}
         </button>

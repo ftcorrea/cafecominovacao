@@ -17,8 +17,8 @@ interface AppContextType {
   toggleLiked: (id: string) => void;
 
   // Filtros
-  activeSection: 'feed' | 'saved' | 'read' | 'archive';
-  setActiveSection: (section: 'feed' | 'saved' | 'read' | 'archive') => void;
+  activeSection: 'feed' | 'saved' | 'archive';
+  setActiveSection: (section: 'feed' | 'saved' | 'archive') => void;
   activeLabel: string;
   setActiveLabel: (label: string) => void;
 
@@ -46,7 +46,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
-  const [activeSection, setActiveSection] = useState<'feed' | 'saved' | 'read' | 'archive'>('feed');
+  const [activeSection, setActiveSection] = useState<'feed' | 'saved' | 'archive'>('feed');
   const [activeLabel, setActiveLabel] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');

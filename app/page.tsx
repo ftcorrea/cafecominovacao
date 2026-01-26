@@ -14,7 +14,6 @@ export default function Home() {
     news,
     setNews,
     savedIds,
-    readIds,
     activeSection,
     activeLabel,
     selectedMonth,
@@ -77,9 +76,6 @@ export default function Home() {
     } else if (activeSection === 'saved') {
       // Salvos: filtra apenas IDs salvos
       filtered = filtered.filter(n => savedIds.has(n.id));
-    } else if (activeSection === 'read') {
-      // Lidos: filtra apenas IDs lidos
-      filtered = filtered.filter(n => readIds.has(n.id));
     }
 
     // Filtro por rótulo
@@ -99,11 +95,10 @@ export default function Home() {
     }
 
     return filtered;
-  }, [news, activeSection, activeLabel, savedIds, readIds, searchQuery, selectedMonth]);
+  }, [news, activeSection, activeLabel, savedIds, searchQuery, selectedMonth]);
 
   const getPageTitle = () => {
     if (activeSection === 'saved') return 'Artigos Salvos';
-    if (activeSection === 'read') return 'Histórico de Leitura';
     if (activeSection === 'archive') return 'Notícias Anteriores';
     if (activeLabel !== 'all') {
       return activeLabel; // O nome do rótulo já é o que queremos exibir
@@ -228,8 +223,6 @@ export default function Home() {
               <p className="text-[13px] text-light-text-secondary dark:text-dark-text-secondary">
                 {activeSection === 'saved'
                   ? 'Você ainda não salvou nenhum artigo.'
-                  : activeSection === 'read'
-                  ? 'Você ainda não marcou nenhum artigo como lido.'
                   : activeSection === 'archive'
                   ? 'Notícias aparecem aqui após 3 dias e ficam disponíveis por até 12 meses.'
                   : 'Tente ajustar seus filtros ou busca.'}
